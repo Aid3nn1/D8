@@ -1,0 +1,468 @@
+/* ================================================================
+   DYNASTY 8 — COUCHE MOBILE (v2)
+   À charger APRÈS style.css. Tout est dans des @media : le desktop
+   n'est jamais touché. Pas de couleurs en dur : on réutilise tes
+   variables (--bg-panel, --hairline, --ink-faint, --gold, --deco)
+   et des gris translucides qui marchent sur fond clair ou sombre.
+   Les tableaux deviennent des cartes grâce à mobile-nav.js, qui
+   ajoute les data-label depuis les <th>.
+   ================================================================ */
+
+:root{
+  --m-top: 56px;
+  --m-tab: 62px;
+  --m-sat: env(safe-area-inset-top, 0px);
+  --m-sab: env(safe-area-inset-bottom, 0px);
+  --m-line: rgba(128,128,128,.22);
+  --m-fill: rgba(128,128,128,.07);
+}
+
+.mobile-tabbar,
+.drawer-scrim{ display:none; }
+
+/* ================================================================
+   TABLETTE + TÉLÉPHONE  (≤ 900px)
+   ================================================================ */
+@media (max-width: 900px){
+
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    overscroll-behavior-y:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body.drawer-open{ overflow:hidden; }
+
+  button, .side-item, .mobile-tabbar-item{ touch-action:manipulation; }
+
+  /* 16px minimum : sinon iOS zoome la page au focus d'un champ */
+  input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]),
+  select, textarea{
+    font-size:16px !important;
+    min-height:44px;
+  }
+  textarea{ min-height:96px; }
+
+  /* ---------- 1. TOPBAR ---------- */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:100;
+    height:calc(var(--m-top) + var(--m-sat));
+    padding:var(--m-sat) 12px 0;
+    gap:10px;
+    box-shadow:0 1px 0 rgba(0,0,0,.25);
+  }
+  .brand{ gap:8px; min-width:0; }
+  .brand-mark-img{ height:30px; width:30px; }
+  .brand-text .name{ font-size:16px; }
+  .brand-text .tag{ display:none; }
+
+  .mode-switch{ margin-left:auto; padding:3px; gap:2px; flex-shrink:0; }
+  .mode-btn{ padding:0 12px; min-height:34px; font-size:11.5px; }
+
+  /* Burger de secours : masqué dès que la tab bar (avec son bouton Menu) est là */
+  .hamburger-mobile{
+    display:flex !important;
+    align-items:center; justify-content:center;
+    width:40px; height:40px;
+    flex-shrink:0;
+    order:-1;
+    font-size:18px;
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--hairline);
+    border-radius:10px;
+  }
+  body.has-tabbar .hamburger-mobile{ display:none !important; }
+
+  /* ---------- 2. TIROIR (sidebar) ---------- */
+  .sidebar{
+    position:fixed;
+    top:0; left:0; bottom:0;
+    width:84vw;
+    max-width:330px;
+    height:100dvh;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    padding:calc(14px + var(--m-sat)) 0 calc(24px + var(--m-sab));
+    background:var(--bg-panel);
+    box-shadow:16px 0 48px rgba(0,0,0,.5);
+    transform:translateX(-105%);
+    visibility:hidden;
+    transition:transform .28s cubic-bezier(.22,.8,.22,1), visibility 0s linear .28s;
+    z-index:200;
+  }
+  .sidebar.open{
+    transform:none;
+    visibility:visible;
+    transition:transform .28s cubic-bezier(.22,.8,.22,1), visibility 0s;
+  }
+
+  .drawer-scrim{
+    display:block;
+    position:fixed; inset:0;
+    z-index:190;
+    background:rgba(0,0,0,.55);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .28s;
+  }
+  body.drawer-open .drawer-scrim{ opacity:1; pointer-events:auto; }
+
+  .side-group-label{ padding:20px 22px 8px; }
+  .side-item{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-height:50px;
+    padding:0 22px;
+    font-size:15px;
+    text-decoration:none;
+  }
+  .side-item .ico{ width:22px; text-align:center; font-size:17px; }
+  .side-item.active{ background:rgba(224,177,61,.12); color:var(--gold); }
+  .side-item.active::before{
+    content:"";
+    position:absolute; left:0; top:8px; bottom:8px;
+    width:3px; border-radius:0 3px 3px 0;
+    background:var(--gold);
+  }
+  body.mode-deco .side-item.active{ background:rgba(160,107,214,.12); color:var(--deco); }
+  body.mode-deco .side-item.active::before{ background:var(--deco); }
+
+  /* ---------- 3. ACCUEIL (hero) ---------- */
+  .hero{ min-height:min(56dvh, 460px); }
+  .hero-title{ font-size:clamp(30px, 8.5vw, 44px); line-height:1.06; }
+  .hero-eyebrow{ font-size:10.5px; letter-spacing:2px; }
+  .hero-sub{ font-size:13.5px; line-height:1.6; padding:0 6px; }
+
+  .stat-strip{
+    flex-wrap:wrap;
+    border-radius:14px;
+    margin:28px 14px 0;
+    width:calc(100% - 28px);
+  }
+  .stat{ flex:1 1 33%; padding:14px 6px; }
+  .stat .num{ font-size:24px; }
+  .stat .lbl{ font-size:9.5px; }
+
+  /* ---------- 4. SECTIONS & GRILLES ---------- */
+  section{ padding:26px 14px 28px; }
+  .section-title{ font-size:22px; }
+  .section-desc{ font-size:13px; }
+
+  .property-grid,
+  .encheres-grid,
+  .ressources-grid,
+  .deco-list-grid,
+  .deco-mes-decos-grid,
+  .fiche-cat-grid,
+  .fiche-galerie-grid,
+  .fiche-promos-grid,
+  .fiche-prestations-grid,
+  .fiche-projets-grid{
+    grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)) !important;
+    gap:14px;
+  }
+  .cfg-grid{ grid-template-columns:1fr !important; gap:14px; }
+  .cfg-card-wide{ grid-column:auto !important; }
+
+  .property-card img{ height:190px; }
+  .feature-row{ flex-direction:column; }
+  .feature-card{ min-width:0; }
+
+  /* ---------- 5. EN-TÊTES DE PAGE & FILTRES ---------- */
+  .ventes-header, .encheres-header, .stats-header,
+  .logs-header, .perms-header, .deco-list-header,
+  .cfg-webhook-row{
+    flex-direction:column;
+    align-items:stretch;
+    gap:12px;
+  }
+  .ventes-filters{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    align-items:stretch;
+  }
+  .ventes-filters > select:first-child,
+  .ventes-filters > button,
+  .ventes-filters > a{ grid-column:1 / -1; }
+  .ventes-filters select,
+  .ventes-filters input{ width:100%; min-width:0; }
+
+  .btn-nouvelle-vente, .btn-close-semaine, .btn-vider-logs,
+  .btn-enregistrer-profil, .btn-submit-vente, .cfg-btn{
+    min-height:46px;
+  }
+  .btn-nouvelle-vente, .btn-close-semaine, .btn-vider-logs,
+  .btn-enregistrer-profil, .btn-submit-vente{
+    width:100%;
+    text-align:center;
+  }
+  .cfg-btn-row{ flex-wrap:wrap; gap:8px; }
+  .cfg-btn-row > .cfg-btn{ flex:1 1 calc(50% - 8px); }
+  .cfg-row{ flex-direction:column; gap:10px; }
+  .cfg-webhook-input-group{ flex-wrap:wrap; gap:8px; }
+  .cfg-webhook-input-group .cfg-input{ flex:1 1 100%; }
+
+  .ventes-stats, .cfg-kpis, .logs-kpis{
+    grid-template-columns:repeat(2, 1fr) !important;
+    gap:10px;
+  }
+  .ventes-stat-card, .logs-kpi-card{ padding:14px; }
+  .ventes-stat-card .val{ font-size:19px; }
+  .stats-columns{ grid-template-columns:1fr !important; }
+
+  .logs-tabs{ display:flex; gap:8px; }
+  .logs-tab{ flex:1; min-height:42px; }
+  .me-periode-switch{ display:flex; gap:8px; }
+  .me-periode-btn{ flex:1; min-height:42px; }
+
+  /* Catalogue : filtres en grille 2 colonnes (pas collés : 8 champs empilés
+     mangeraient tout l'écran) */
+  .catalogue-filtres{
+    display:grid !important;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    padding:12px;
+    position:static;
+  }
+  .catalogue-filtres > *{ width:100%; min-width:0; }
+  #catalogueRecherche, .cat-filtre-reset{ grid-column:1 / -1; }
+  .cat-filtre-reset{ min-height:44px; }
+
+  /* ---------- 6. TABLEAUX ---------- */
+  .ventes-table-wrap{ border-radius:12px; -webkit-overflow-scrolling:touch; }
+
+  /* Tableaux "denses" qui restent des tableaux (classement, matrice…) */
+  .stats-panel, #heuresDetailPanel{ overflow-x:auto; }
+  .stats-panel table, #heuresDetailPanel table{ font-size:12px; }
+  .stats-panel th, .stats-panel td{ padding:8px 6px; }
+  table.matrix-table{ min-width:640px; font-size:11.5px; }
+  .ventes-table-wrap:has(.matrix-table)::before{
+    content:"⇠ Glisse pour voir la suite ⇢";
+    display:block;
+    padding:6px 0 4px;
+    text-align:center;
+    font-size:10px;
+    color:var(--ink-faint);
+  }
+
+  /* Tableaux → cartes (classe .m-cards ajoutée par mobile-nav.js) */
+  .ventes-table-wrap:has(> table.m-cards){
+    background:none;
+    border:0;
+    box-shadow:none;
+    overflow:visible;
+    max-height:none !important;
+  }
+  table.m-cards,
+  table.m-cards tbody{
+    display:block;
+    width:100%;
+    min-width:0 !important;
+  }
+  table.m-cards thead{ display:none; }
+  table.m-cards tr{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px 14px;
+    margin:0 0 10px;
+    padding:14px;
+    border:1px solid var(--m-line);
+    border-radius:14px;
+    background:var(--m-fill);
+  }
+  /* les logs colorent le bord gauche en ligne : on l'épaissit */
+  table.m-cards tr[style*="border-left-color"]{ border-left-width:4px; }
+  table.m-cards td{
+    display:block;
+    min-width:0;
+    padding:0 !important;
+    border:0 !important;
+    font-size:13.5px;
+    text-align:left;
+    overflow-wrap:anywhere;
+  }
+  table.m-cards td::before{
+    content:attr(data-label);
+    display:block;
+    margin-bottom:2px;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:.03em;
+    color:var(--ink-faint);
+  }
+  table.m-cards td[data-label=""]::before,
+  table.m-cards td:not([data-label])::before{ display:none; }
+  table.m-cards td.m-wide,
+  table.m-cards td[colspan]{ grid-column:1 / -1; }
+  table.m-cards td[colspan]{ text-align:center; }
+  table.m-cards td[colspan]::before{ display:none; }
+
+  .action-cell{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .btn-dots, .btn-supprimer, .btn-voir-profil{ min-height:38px; }
+  .btn-dots{ min-width:38px; }
+  .dropdown-menu button{ min-height:46px; }
+
+  /* Pagination (celle de main.js) */
+  [id^="pagination"]{ gap:6px; padding:0 4px; }
+  [id^="pagination"] button{ min-width:40px; min-height:40px; }
+  [id^="pagination"] select{ min-height:40px; }
+
+  /* ---------- 7. MODALES → FEUILLES ---------- */
+  .modal-overlay{ align-items:flex-end; padding:0; }
+  .modal-box{
+    position:relative;
+    width:100%;
+    max-width:100%;
+    max-height:92dvh;
+    overflow-y:auto;
+    border-radius:20px 20px 0 0;
+    padding:22px 18px calc(22px + var(--m-sab));
+    animation:m-sheet .28s cubic-bezier(.22,.8,.22,1);
+  }
+  .modal-box::before{
+    content:"";
+    display:block;
+    width:38px; height:4px;
+    margin:-8px auto 14px;
+    border-radius:2px;
+    background:var(--m-line);
+  }
+  .modal-close{ top:12px; right:12px; width:40px; height:40px; font-size:20px; }
+  @keyframes m-sheet{
+    from{ transform:translateY(24px); opacity:0; }
+    to{ transform:none; opacity:1; }
+  }
+
+  .enchere-zoom-overlay{ align-items:flex-end; padding:0; }
+  .enchere-zoom-card{
+    width:100%; max-width:100%;
+    max-height:92dvh;
+    overflow-y:auto;
+    border-radius:20px 20px 0 0;
+  }
+  .enchere-zoom-media{ height:220px; }
+  .enchere-zoom-price-row{ flex-wrap:wrap; gap:8px; }
+  .enchere-zoom-nav{ width:44px; height:44px; }
+
+  /* Fenêtres créées en JS (gestion des biens, zones, bypass…) : même logique feuille */
+  body > div[style*="z-index: 999999"]:not(.dropdown-menu){
+    align-items:flex-end !important;
+    padding:0 !important;
+  }
+  body > div[style*="z-index: 999999"]:not(.dropdown-menu) > div{
+    width:100% !important;
+    max-width:100% !important;
+    max-height:92dvh !important;
+    border-radius:20px 20px 0 0 !important;
+    padding-bottom:calc(24px + var(--m-sab)) !important;
+  }
+
+  /* ---------- 8. FICHES & PROFILS ---------- */
+  .fiche-hero{ flex-direction:column; align-items:center; text-align:center; padding:20px; }
+  .fiche-hero-pp{ width:96px; height:96px; }
+  .fiche-hero-infos h1{ font-size:20px; justify-content:center; }
+  .fiche-hero-meta{ justify-content:center; flex-wrap:wrap; }
+  .fiche-edit-btn{ width:100%; }
+  .fiche-staff-nav{ flex-direction:column; text-align:center; gap:8px; }
+  .fiche-staff-nav button{ min-height:44px; width:100%; }
+  .fiche-section-head{ flex-wrap:wrap; gap:10px; }
+
+  .me-profil-card{ flex-direction:column; align-items:center; text-align:center; }
+  .me-profil-meta{ justify-content:center; flex-wrap:wrap; }
+  .deco-profil-self-header{ flex-direction:column; align-items:center; text-align:center; }
+  .deco-pp-upload{ width:104px; height:104px; }
+  .deco-profil-header{ flex-direction:column; align-items:center; text-align:center; }
+
+  /* Carrousels horizontaux (vidéos / photos de déco) */
+  .zoom-deco-list{ scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+  .yt-embed{ flex:0 0 250px !important; scroll-snap-align:start; }
+
+  /* ---------- 9. ÉCRANS LOGIN / MAINTENANCE ---------- */
+  .gate-card{ width:100%; padding:28px 20px; }
+  .gate-title{ font-size:30px; }
+  .gate-title-serif{ font-size:23px; }
+  .gate-sub{ font-size:13px; }
+  .gate-logo{ width:100px; }
+  .gate-discord-btn, .gate-logout-btn{ width:100%; justify-content:center; min-height:48px; }
+}
+
+/* ================================================================
+   TAB BAR BASSE
+   Générée par mobile-nav.js (priorités = data-mobiletab="1..9")
+   ================================================================ */
+@media (max-width: 900px){
+  body.has-tabbar .mobile-tabbar{ display:flex; }
+  body.has-tabbar footer{ padding-bottom:calc(var(--m-tab) + var(--m-sab) + 14px); }
+
+  .mobile-tabbar{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    z-index:150;
+    height:calc(var(--m-tab) + var(--m-sab));
+    padding:0 6px var(--m-sab);
+    align-items:stretch;
+    background:var(--bg-panel);
+    border-top:1px solid var(--hairline);
+    box-shadow:0 -6px 24px rgba(0,0,0,.35);
+  }
+  .mobile-tabbar-item{
+    position:relative;
+    flex:1 1 0;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    padding:0 2px;
+    border:0;
+    background:none;
+    color:var(--ink-faint);
+    font:inherit;
+    font-size:10.5px;
+    font-weight:600;
+    transition:color .15s, transform .1s;
+  }
+  .mobile-tabbar-item:active{ transform:scale(.93); }
+  .mobile-tabbar-item .ico{ font-size:21px; line-height:1; }
+  .mobile-tabbar-item .lbl{
+    max-width:100%;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .mobile-tabbar-item.active{ color:var(--gold); }
+  .mobile-tabbar-item.active::before{
+    content:"";
+    position:absolute;
+    top:0; left:50%;
+    width:28px; height:3px;
+    transform:translateX(-50%);
+    border-radius:0 0 3px 3px;
+    background:currentColor;
+  }
+  body.mode-deco .mobile-tabbar-item.active{ color:var(--deco); }
+}
+
+/* ================================================================
+   PETITS ÉCRANS (≤ 380px)
+   ================================================================ */
+@media (max-width: 380px){
+  .stat-strip .stat{ flex:1 1 100%; }
+  .stat + .stat{ border-left:0; border-top:1px solid var(--hairline); }
+  .ventes-stats, .cfg-kpis, .logs-kpis{ grid-template-columns:1fr !important; }
+  .mode-btn{ padding:0 9px; font-size:10.5px; }
+  .mobile-tabbar-item{ font-size:10px; }
+  table.m-cards tr{ grid-template-columns:1fr; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .sidebar, .drawer-scrim, .modal-box, .mobile-tabbar-item{
+    transition:none !important;
+    animation:none !important;
+  }
+}

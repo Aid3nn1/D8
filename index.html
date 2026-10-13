@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Dynasty 8</title>
+<link rel="icon" href="assets/logo_site.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d1f0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="mobile-app.css">
+</head>
+<body class="mode-agence">
+
+<div id="appRoot" style="display:none;">
+  <header class="topbar">
+    <button class="hamburger-mobile">☰</button>
+    <div class="brand" onclick="goHome()" style="cursor:pointer;">
+      <img src="assets/logo_dynasty8.png" alt="Dynasty 8" class="brand-mark-img">
+      <div class="brand-text">
+        <span class="name">Dynasty <em>8</em></span>
+        <span class="tag">LOS SANTOS · SKYFA RP</span>
+      </div>
+    </div>
+    <div class="mode-switch">
+      <button class="mode-btn active" id="btn-agence" onclick="setMode('agence')">Agence Immo</button>
+      <button class="mode-btn" id="btn-deco" onclick="setMode('deco')">Décoration</button>
+    </div>
+  </header>
+
+  <div class="shell">
+
+    <!-- ============ SIDEBAR AGENCE ============
+         data-mobiletab="N" : priorité dans la barre du bas sur mobile (1 = le plus important).
+         La barre garde les 4 plus prioritaires visibles pour le rôle, le reste va dans "Menu". -->
+    <nav class="sidebar" id="sidebar-agence">
+      <div class="side-group-label">Catalogue</div>
+      <div class="side-item" data-page="catalogue" data-mobiletab="5" onclick="showSection(this,'catalogue')"><span class="ico">📋</span> Catalogue</div>
+      <a class="side-item" data-mobiletab="6" href="carte.html" target="dynasty8-carte" rel="noopener"><span class="ico">🗺️</span> Carte des cohérences</a>
+      <div class="side-group-label">Employé</div>
+      <div class="side-item" data-page="ressources" onclick="showSection(this,'ressources')"><span class="ico">📁</span> Ressources</div>
+      <div class="side-item" data-page="ventes" data-mobiletab="1" onclick="showSection(this,'ventes')"><span class="ico">🧾</span> Ventes</div>
+      <div class="side-item" data-page="mon-espace" data-mobiletab="2" onclick="showSection(this,'mon-espace')"><span class="ico">👤</span> Mon espace</div>
+      <div class="side-item" data-page="statistiques" data-mobiletab="3" onclick="showSection(this,'statistiques')"><span class="ico">📈</span> Statistiques</div>
+      <div class="side-group-label">Patron / Staff</div>
+      <div class="side-item" data-page="encheres" onclick="showSection(this,'encheres')"><span class="ico">🔨</span> Ventes aux enchères</div>
+      <div class="side-item" data-page="permissions" onclick="showSection(this,'permissions')"><span class="ico">🔑</span> Permissions</div>
+      <div class="side-item" data-page="logs" onclick="showSection(this,'logs')"><span class="ico">📋</span> Logs</div>
+      <div class="side-item" data-page="config" data-mobiletab="4" onclick="showSection(this,'config')"><span class="ico">⚙️</span> Config</div>
+      <div class="side-group-label">Compte</div>
+      <div class="side-item" data-page="deconnexion" onclick="showSection(this,'deconnexion')"><span class="ico">🚪</span> Déconnexion</div>
+    </nav>
+
+    <!-- ============ SIDEBAR DÉCO ============ -->
+    <nav class="sidebar" id="sidebar-deco" style="display:none;">
+      <div class="side-group-label">Espace décoration</div>
+      <div class="side-item active" data-page="home-deco" data-mobiletab="1" onclick="showSection(this,'home-deco')"><span class="ico">🏠</span> Accueil déco</div>
+      <div class="side-item" data-page="decorateurs" data-mobiletab="2" onclick="showSection(this,'decorateurs')"><span class="ico">🎨</span> Décorateurs</div>
+      <div class="side-group-label">Compte</div>
+      <div class="side-item" data-page="profil" data-mobiletab="3" onclick="showSection(this,'profil')"><span class="ico">✏️</span> Mon profil</div>
+      <div class="side-item" id="sideItemMaPage" data-mobiletab="4" style="display:none;" onclick="ouvrirMaPage()"><span class="ico">🗂️</span> Ma page</div>
+      <div class="side-item" data-page="config-deco" data-mobiletab="5" onclick="showSection(this,'config-deco')"><span class="ico">⚙️</span> Config déco</div>
+      <div class="side-item" data-page="deconnexion" onclick="showSection(this,'deconnexion')"><span class="ico">🚪</span> Déconnexion</div>
+    </nav>
+
+    <main class="main">
+
+    <!-- ================================================================
+          PAGE: AGENCE (Accueil)
+          ================================================================ -->
+      <div id="page-agence" style="display:none;">
+        <section class="hero hero-agence" style="padding:0;">
+          <div class="hero-bg"></div>
+          <div class="hero-overlay"></div>
+          <div class="hero-body">
+            <p class="hero-eyebrow">Los Santos Real Estate</p>
+            <h1 class="hero-title">La ville s'achète<br>en <em>confiance</em>.</h1>
+            <p class="hero-sub">De la villa des hauteurs de Vinewood au studio de Vespucci, Dynasty 8 accompagne chaque acquisition avec la même exigence.</p>
+          </div>
+          <div class="stat-strip">
+            <div class="stat"><div class="num" id="statHomeBiens">0</div><div class="lbl">Propriétés</div></div>
+            <div class="stat"><div class="num" id="statHomeAgents">0</div><div class="lbl">Agents</div></div>
+            <div class="stat"><div class="num" id="statHomeService">0</div><div class="lbl">En service</div></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <p class="section-eyebrow">À propos</p>
+            <h2 class="section-title">Une agence pensée pour <em>Los Santos</em></h2>
+            <p class="section-desc">Une équipe d'agents qui connaît chaque quartier, de Vinewood Hills aux docks de La Mesa, pour un accompagnement sur-mesure du premier contact à la remise des clés.</p>
+          </div>
+          <div class="feature-row">
+            <div class="feature-card"><div class="glyph">🏙️</div><h3>Expertise locale</h3><p>Connaissance approfondie de chaque quartier de Los Santos.</p></div>
+            <div class="feature-card"><div class="glyph">⭐</div><h3>Service premium</h3><p>Accompagnement personnalisé du début à la fin.</p></div>
+            <div class="feature-card"><div class="glyph">🔑</div><h3>Réseau étendu</h3><p>Accès exclusif aux biens les plus prestigieux du marché.</p></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <p class="section-eyebrow">Actualités</p>
+            <h2 class="section-title">Cette <em>semaine</em></h2>
+          </div>
+          <div class="news-card"><p>Préparez vos mandats, le marché immobilier de Los Santos est en pleine ébullition.</p></div>
+        </section>
+      </div>
+
+      <!-- ================================================================
+        PAGE: CATALOGUE
+      ================================================================ -->
+      <div id="page-catalogue" style="display:none;">
+        <section style="padding-top:40px;">
+          <div class="section-head" style="margin-bottom:20px;">
+            <p class="section-eyebrow">Catalogue</p>
+            <h2 class="section-title">Tous les <em>biens</em></h2>
+          </div>
+          <div class="catalogue-filtres">
+            <input type="text" id="catalogueRecherche" class="cat-filtre-input" placeholder="🔎 Rechercher un bien..." oninput="filtrerCatalogueBiens()">
+            <select id="catalogueFiltreDeco" class="cat-filtre-select" onchange="filtrerCatalogueBiens()">
+              <option value="all">Tous les intérieurs</option>
+              <option value="decore">🎬 Intérieurs décorés</option>
+              <option value="non_decore">Sans déco</option>
+            </select>
+            <select id="catalogueFiltreCategorie" class="cat-filtre-select" onchange="filtrerCatalogueBiens()">
+              <option value="all">Toutes catégories</option>
+            </select>
+            <input type="number" id="catalogueFiltrePrixAchatMax" class="cat-filtre-input cat-filtre-num" placeholder="Achat max ($)" min="0" oninput="filtrerCatalogueBiens()">
+            <input type="number" id="catalogueFiltrePrixLocMax" class="cat-filtre-input cat-filtre-num" placeholder="Loc/sem max ($)" min="0" oninput="filtrerCatalogueBiens()">
+            <input type="number" id="catalogueFiltreCoffreMin" class="cat-filtre-input cat-filtre-num" placeholder="Coffre min (kg)" min="0" oninput="filtrerCatalogueBiens()">
+            <select id="catalogueTri" class="cat-filtre-select" onchange="filtrerCatalogueBiens()">
+              <option value="recent">Plus récents</option>
+              <option value="prix_achat_asc">Achat ↑</option>
+              <option value="prix_achat_desc">Achat ↓</option>
+              <option value="prix_loc_asc">Loc/sem ↑</option>
+              <option value="prix_loc_desc">Loc/sem ↓</option>
+              <option value="nom">Nom (A→Z)</option>
+            </select>
+            <button type="button" class="cat-filtre-reset" onclick="resetFiltresCatalogue()">✕ Réinitialiser</button>
+          </div>
+          <div id="catalogueContainer"><!-- généré par renderCatalogueGrid() --></div>
+        </section>
+      </div>
+
+      <!-- ================================================================
+          PAGE: RESSOURCES (Documents)
+          ================================================================ -->
+      <div id="page-ressources" style="display:none;">
+        <section>
+          <div class="section-head">
+            <p class="section-eyebrow">Employé</p>
+            <h2 class="section-title">Ressources <em>Employés</em></h2>
+            <p class="section-desc">Accédez aux documents, guides et outils nécessaires pour votre activité chez Dynasty 8.</p>
+          </div>
+          <div class="ressources-grid" id="ressourcesGrid">
+            <!-- Généré par la partie RESSOURCES de main.js -->
+          </div>
+        </section>
+      </div>
+
+      <!-- ================================================================
+          PAGE: VENTES
+          (le nombre de lignes par page se règle dans la barre de pagination
+           générée par main.js sous le tableau)
+          ================================================================ -->
+      <div id="page-ventes" style="display:none;">
+        <section style="padding-top:40px;">
+
+          <div class="ventes-header">
+            <h2>Gestion des Ventes</h2>
+            <div class="ventes-filters">
+              <select id="filterVentes"></select>
+              <input type="date" id="filterDu" title="Du">
+              <input type="date" id="filterAu" title="Au">
+              <button class="btn-nouvelle-vente" onclick="openVenteModal()">Nouvelle vente +</button>
+            </div>
+          </div>
+
+          <input type="text" class="ventes-search" placeholder="🔎 Rechercher un bien, un client, un agent...">
+
+          <div class="ventes-stats" id="ventesStatsCards">
+            <!-- Généré par genererVentesStats() dans main.js -->
+          </div>
+
+          <div class="ventes-table-wrap">
+            <table class="ventes-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Bien</th>
+                  <th>Type</th>
+                  <th>Prix</th>
+                  <th>Commission</th>
+                  <th>Semaines</th>
+                  <th>Client</th>
+                  <th>Tél</th>
+                  <th>Agent</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="ventesTableBody">
+                <!-- Généré par la partie VENTES de main.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ MODAL NOUVELLE TRANSACTION (partie VENTES) ============ -->
+      <div class="modal-overlay" id="venteModalOverlay" onclick="closeVenteModalOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="closeVenteModal()">✕</button>
+          <h3 id="venteModalTitle">Nouvelle Transaction</h3>
+          <form id="venteForm" onsubmit="return submitVenteForm(event)">
+            <div class="form-group" id="v_client_search_group" style="position:relative;">
+              <label>🔎 Rechercher un client existant</label>
+              <input type="text" id="v_client_search" placeholder="Nom de famille, prénom, tél, ID Discord..." autocomplete="off" oninput="rechercherClientVente(this.value)">
+              <div id="v_client_results" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:10;background:#fff;border:1px solid #e2e2de;border-radius:8px;max-height:200px;overflow-y:auto;box-shadow:0 8px 20px rgba(0,0,0,.15);"></div>
+            </div>
+            <div class="form-group">
+              <label>Nom Prénom de l'acquéreur</label>
+              <input type="text" id="v_client" placeholder="Nom Prénom de l'acquéreur" required>
+            </div>
+            <div class="form-group">
+              <label>Numéro de téléphone</label>
+              <input type="text" id="v_tel" placeholder="ex: 555-0123" required>
+            </div>
+            <div class="form-group">
+              <label>Sélectionner le bien</label>
+              <div id="v_bien_preview" class="readonly" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:11px 14px;background:#f0f0ec;border:1px solid #e2e2de;border-radius:8px;" onclick="ouvrirSelecteurBienVente()">
+                <span style="color:#9a9a94;font-size:13px;">📋 Cliquer pour choisir un bien</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Type de transaction</label>
+              <div class="tabs-toggle" id="typeTransactionTabs">
+                <button type="button" class="active" data-type="Achat" onclick="selectTypeTransaction('Achat')">🏠 Achat</button>
+                <button type="button" data-type="Location" onclick="selectTypeTransaction('Location')">🔑 Location</button>
+              </div>
+              <input type="hidden" id="typeTransaction" value="Achat">
+            </div>
+            <div class="form-group" id="groupeUsageVilla" style="display:none;">
+              <label>Usage de la villa spéciale</label>
+              <div class="tabs-toggle" id="usageVillaTabs">
+                <button type="button" class="active" data-usage="habitation" onclick="selectUsageVilla('habitation')">🏠 Habitation</button>
+                <button type="button" data-usage="garage" onclick="selectUsageVilla('garage')">🚗 Garage</button>
+              </div>
+              <input type="hidden" id="v_usage_villa" value="habitation">
+            </div>
+            <div class="form-group" id="groupeSemaines" style="display:none;">
+              <label>Nombre de semaines (location uniquement)</label>
+              <input type="number" id="v_semaines" min="1" max="4" value="1" oninput="updatePrixAuto()">
+            </div>
+            <div class="form-group" id="groupeVenteEmploye" style="display:none;">
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox" id="v_vente_employe" style="width:auto;margin:0;" onchange="updatePrixAuto()">
+                👔 Vente employé (-30 %)
+              </label>
+            </div>
+            <div class="form-group">
+              <label>Prix final ($)</label>
+              <input type="text" id="v_prix" class="readonly" placeholder="Prix automatique" readonly>
+            </div>
+            <div class="form-group">
+              <label>Commission agent</label>
+              <input type="number" id="v_commission" class="highlight" placeholder="Ex: 25000">
+              <span id="v_prix_ig" style="font-size:12px; color:#888; margin-left:8px;"></span>
+            </div>
+            <div class="form-group">
+              <label>ID Discord de l'acquéreur</label>
+              <input type="text" id="v_discord" placeholder="ID Discord (ex: 2831...)">
+            </div>
+            <button type="submit" class="btn-submit-vente">Enregistrer la vente</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================================
+          PAGE: DÉCORATION (accueil mode déco)
+          ================================================================ -->
+      <div id="page-deco" style="display:none;">
+        <section class="hero hero-deco" style="padding:0;">
+          <div class="hero-bg"></div>
+          <div class="hero-overlay"></div>
+          <div class="hero-body">
+            <p class="hero-eyebrow">Espace décoration</p>
+            <h1 class="hero-title">Chaque intérieur,<br>une <em>signature</em>.</h1>
+            <p class="hero-sub">Des décorateurs indépendants et officiels qui transforment les biens Dynasty 8 en vitrines. Parcourez leurs réalisations avant de choisir la vôtre.</p>
+          </div>
+          <div class="stat-strip">
+            <div class="stat"><div class="num" id="statDecoTotal">0</div><div class="lbl">Décorations</div></div>
+            <div class="stat"><div class="num" id="statDecoBiens">0</div><div class="lbl">Biens décorés</div></div>
+            <div class="stat"><div class="num" id="statDecoActifs">0</div><div class="lbl">Décorateurs actifs</div></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-head">
+            <p class="section-eyebrow">Nouveautés</p>
+            <h2 class="section-title">Dernières <em>décorations</em></h2>
+            <p class="section-desc">Les créations les plus récentes de nos décorateurs — indépendants ou certifiés.</p>
+          </div>
+          <div class="deco-mes-decos-grid" id="derniereDecosGrid">
+            <!-- Généré par genererDerniereDecos() dans main.js -->
+          </div>
+        </section>
+      </div>
+
+      <!-- ================================================================
+          PAGE: MON ESPACE — stats live de l'agent connecté
+          ================================================================ -->
+      <div id="page-mon-espace" style="display:none;">
+        <section style="padding-top:40px;">
+          <div class="section-head" style="margin-bottom:20px;">
+            <p class="section-eyebrow">Employé</p>
+            <h2 class="section-title">Mon <em>espace</em></h2>
+            <p class="section-desc" id="meAgentName" style="display:none;">Agent</p>
+            <div id="meServiceWrap" class="me-service-wrap"></div>
+            <div class="me-agent-select-wrap" id="meAgentSelectWrap" style="display:none;margin-top:14px;">
+              <label class="cfg-label" style="display:block;margin-bottom:6px;">👁️ Consulter l'espace de</label>
+              <select id="meAgentSelect" class="role-select-inline" onchange="changerAgentMonEspace(this.value)" style="font-size:13px;padding:9px 14px;"></select>
+            </div>
+            <div class="me-periode-switch">
+              <button class="me-periode-btn active" data-periode="semaine" onclick="changerPeriodeMonEspace('semaine')">Cette semaine</button>
+              <button class="me-periode-btn" data-periode="global" onclick="changerPeriodeMonEspace('global')">Global</button>
+            </div>
+            <div id="meSemaineWrap" style="margin-top:14px;">
+              <label class="cfg-label" style="display:block;margin-bottom:6px;">📆 Période</label>
+              <select id="meSemaineSelect" class="role-select-inline" onchange="changerSemaineMonEspace(this.value)" style="font-size:13px;padding:9px 14px;"></select>
+            </div>
+          </div>
+
+          <div id="meProfilCard" class="me-profil-card"></div>
+
+          <div class="ventes-stats" id="meStats">
+            <!-- Généré par la partie MON ESPACE de main.js -->
+          </div>
+
+          <div class="me-progress-card">
+            <p class="me-progress-label">📈 Progression vs le meilleur agent</p>
+            <div class="me-progress-bar-wrap">
+              <div class="me-progress-bar" id="meProgressBar"></div>
+            </div>
+            <p class="me-progress-note" id="meProgressNote"></p>
+          </div>
+
+          <div class="section-head" style="margin:36px 0 18px;max-width:none;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <h2 class="section-title" style="font-size:22px;">🕓 Mes <em>ventes</em></h2>
+            <button class="cfg-btn cfg-btn-green" onclick="copierVentesMonEspaceExcel(this)">📋 Copier pour Excel</button>
+          </div>
+
+          <input type="text" class="ventes-search" id="meSearch" placeholder="🔎 Rechercher parmi mes ventes...">
+
+          <div class="ventes-table-wrap">
+            <table class="ventes-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Bien</th>
+                  <th>Type</th>
+                  <th>Prix</th>
+                  <th>Commission</th>
+                  <th>Client</th>
+                </tr>
+              </thead>
+              <tbody id="meTableBody">
+                <!-- Généré par la partie MON ESPACE de main.js -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================================================================
+          PAGE: STATISTIQUES
+          ================================================================ -->
+      <div id="page-statistiques" style="display:none;">
+        <section style="padding-top:40px;">
+
+          <div class="stats-header">
+            <h2>Statistiques</h2>
+            <div class="ventes-filters">
+              <select id="statAgentFilter"></select>
+              <select id="statTypeFilter">
+                <option value="toutes">Achats & Locations</option>
+                <option value="achat">Achats uniquement</option>
+                <option value="location">Locations uniquement</option>
+              </select>
+              <input type="date" id="statDu" title="Du">
+              <input type="date" id="statAu" title="Au">
+              <button class="btn-close-semaine" id="btnCloseSemaine" onclick="cloturerSemainePreview()">🔒 Close Semaine</button>
+            </div>
+          </div>
+
+          <p class="stats-section-title">Vue d'ensemble</p>
+          <div class="ventes-stats" id="statsOverview">
+            <!-- Généré par la partie STATISTIQUES de main.js -->
+          </div>
+
+          <div class="me-progress-card" id="heuresDetailPanel" style="display:none;margin-bottom:28px;">
+            <p class="me-progress-label">🕓 Heures de service — détail par agent</p>
+            <table class="ventes-table" style="min-width:0;">
+              <thead><tr><th>Agent</th><th>Heures</th></tr></thead>
+              <tbody id="heuresDetailBody"></tbody>
+            </table>
+          </div>
+
+          <div class="stats-columns">
+            <div class="stats-panel">
+              <p class="stats-section-title">🏆 Classement des agents</p>
+              <table class="ventes-table" style="min-width:0;">
+                <thead><tr><th>#</th><th>Agent</th><th>Ventes</th><th>Volume</th><th>Commission</th></tr></thead>
+                <tbody id="statsClassementBody"></tbody>
+              </table>
+            </div>
+            <div class="stats-panel">
+              <p class="stats-section-title">🏠 Biens les plus vendus</p>
+              <table class="ventes-table" style="min-width:0;">
+                <thead><tr><th>#</th><th>Bien</th><th>Ventes</th><th>%</th></tr></thead>
+                <tbody id="statsBiensBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="section-head" style="margin:36px 0 18px;">
+            <h2 class="section-title" style="font-size:22px;">Ventes de la <em>semaine</em> (<span id="statsVentesCount">0</span>)</h2>
+          </div>
+          <div class="ventes-table-wrap">
+            <table class="ventes-table">
+              <thead>
+                <tr><th>Date</th><th>Bien</th><th>Type</th><th>Prix</th><th>Agent</th><th>Client</th></tr>
+              </thead>
+              <tbody id="statsVentesBody"></tbody>
+            </table>
+          </div>
+
+          <div class="section-head" style="margin:36px 0 18px;">
+            <h2 class="section-title" style="font-size:22px;">📆 Répartition par <em>semaine</em></h2>
+          </div>
+          <div class="ventes-table-wrap">
+            <table class="ventes-table" style="min-width:0;">
+              <thead><tr><th>Semaine</th><th>Ventes</th><th>Volume</th><th>Commissions</th></tr></thead>
+              <tbody id="statsSemaineBody"></tbody>
+            </table>
+          </div>
+
+        </section>
+      </div>
+
+      <!-- ================================================================
+          PAGE: VENTES AUX ENCHÈRES
+          ================================================================ -->
+      <div id="page-encheres" style="display:none;">
+        <section>
+          <div class="encheres-header">
+            <h2>Ventes aux Enchères</h2>
+            <button class="btn-nouvelle-vente btn-enchere-couleur" onclick="ouvrirModalEnchere()">🔨 Créer une vente aux enchères +</button>
+          </div>
+          <div id="encheresGrid" class="encheres-grid">
+            <!-- Généré par la partie ENCHÈRES de main.js -->
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ MODAL CRÉER / MODIFIER UNE ENCHÈRE ============ -->
+      <div class="modal-overlay" id="enchereModalOverlay" onclick="fermerModalEnchereOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="fermerModalEnchere()">✕</button>
+          <h3 id="enchereModalTitle">🔨 Créer une vente aux enchères</h3>
+          <form id="enchereForm" onsubmit="return soumettreEnchereForm(event)">
+            <div class="form-group">
+              <label>Nom du bien</label>
+              <input type="text" id="ench_nom" placeholder="Ex: Villa mystère" required>
+            </div>
+            <div class="form-group">
+              <label>Prix de départ</label>
+              <input type="number" id="ench_prix" min="0" placeholder="Ex: 1000" required>
+            </div>
+            <div class="form-group">
+              <label>Coffre (kg)</label>
+              <input type="number" id="ench_coffre" min="0" placeholder="Ex: 100" required>
+            </div>
+            <div class="form-group">
+              <label>Photos (la 1ère = photo principale)</label>
+              <input type="file" id="ench_photos" accept="image/*" multiple>
+            </div>
+            <div id="enchPhotosPreview" class="photo-upload-preview"></div>
+            <button type="submit" class="btn-submit-vente">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ============ ZOOM / DÉTAIL D'UNE ENCHÈRE ============ -->
+      <div class="enchere-zoom-overlay" id="enchereZoomOverlay" onclick="fermerZoomEnchereOutside(event)">
+        <div class="enchere-zoom-card" onclick="event.stopPropagation()">
+          <button class="modal-close enchere-zoom-close" onclick="fermerZoomEnchere()">✕</button>
+          <div class="enchere-zoom-media">
+            <img id="enchereZoomImg" src="">
+            <button class="enchere-zoom-nav prev" id="enchereZoomPrev" onclick="naviguerZoomPhoto(-1)">‹</button>
+            <button class="enchere-zoom-nav next" id="enchereZoomNext" onclick="naviguerZoomPhoto(1)">›</button>
+            <div class="enchere-zoom-dots" id="enchereZoomDots"></div>
+            <div class="enchere-zoom-title" id="enchereZoomTitle"></div>
+          </div>
+          <div class="enchere-zoom-body">
+            <div class="enchere-zoom-price-row">
+              <div class="enchere-zoom-pill"><span class="lbl">Prix de départ</span><span class="val" id="enchereZoomPrix"></span></div>
+              <div class="enchere-zoom-pill"><span class="lbl">Coffre</span><span class="val" id="enchereZoomCoffre"></span></div>
+            </div>
+            <div id="enchereZoomVendueInfo" style="display:none;"></div>
+            <button class="btn-vendre-zoom" id="enchereZoomBtnVendre">💰 Vendre</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ MODAL VENDRE UNE ENCHÈRE ============ -->
+      <div class="modal-overlay" id="vendreModalOverlay" onclick="fermerModalVendreOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="fermerModalVendre()">✕</button>
+          <h3>💰 Vendre l'enchère</h3>
+          <p class="vendre-sub" id="vendreSubtitle"></p>
+          <form id="vendreForm" onsubmit="return soumettreVendreForm(event)">
+            <div class="form-group">
+              <label>Nom Prénom du gagnant</label>
+              <input type="text" id="vendre_client" placeholder="Nom Prénom" required>
+            </div>
+            <div class="form-group">
+              <label>Numéro de téléphone</label>
+              <input type="text" id="vendre_tel" placeholder="ex: 555-0123" required>
+            </div>
+            <div class="form-group">
+              <label>ID Discord du gagnant</label>
+              <input type="text" id="vendre_discord" placeholder="ID Discord" required>
+            </div>
+            <div class="form-group">
+              <label>Prix final ($)</label>
+              <input type="number" id="vendre_prix" min="0" required>
+            </div>
+            <button type="submit" class="btn-submit-vente btn-confirmer-vente">Confirmer la vente</button>
+          </form>
+        </div>
+      </div>
+
+       <!-- ============ ZOOM / FICHE D'UN BIEN DU CATALOGUE ============ -->
+      <div class="enchere-zoom-overlay" id="bienZoomOverlay" onclick="fermerZoomBienOutside(event)"></div>
+
+      <!-- ================================================================
+          PAGE: PERMISSIONS
+          ================================================================ -->
+      <div id="page-permissions" style="display:none;">
+        <section>
+          <div class="perms-header">
+            <div>
+              <p class="section-eyebrow">Patron / Staff</p>
+              <h2 class="section-title">Gestion des <em>Membres</em></h2>
+            </div>
+            <div class="ventes-filters">
+              <select id="filterGrade"><option value="tous">Tous les grades</option></select>
+              <button class="btn-nouvelle-vente" onclick="openMemberModal()">Ajouter un membre +</button>
+            </div>
+          </div>
+
+          <div class="ventes-table-wrap">
+            <table class="ventes-table perms-table">
+              <thead>
+                <tr><th>Nom RP</th><th>Nom HRP</th><th>ID Discord</th><th>Rôle</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="membresTableBody"></tbody>
+            </table>
+          </div>
+          <div class="section-head" style="margin:40px 0 18px;">
+            <p class="section-eyebrow">Vue d'ensemble</p>
+            <h2 class="section-title" style="font-size:22px;">Qui peut faire <em>quoi</em></h2>
+          </div>
+          <div class="ventes-table-wrap">
+            <table class="ventes-table matrix-table">
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Décorateur</th><th>Agent Immo</th><th>HG</th>
+                  <th>Staff</th><th>Co-Patron</th><th>Owner</th>
+                </tr>
+              </thead>
+              <tbody id="matrixTableBody"></tbody>
+            </table>
+          </div>
+          <p class="mock-note">Modifier le rôle d'un membre reste réservé au Owner, quelle que soit la page.</p>
+        </section>
+      </div>
+
+      <!-- ============ MODAL AJOUTER UN COLLABORATEUR ============ -->
+      <div class="modal-overlay" id="memberModalOverlay" onclick="closeMemberModalOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="closeMemberModal()">✕</button>
+          <h3>Ajouter un collaborateur</h3>
+          <form id="memberForm" onsubmit="return submitMemberForm(event)">
+            <div class="form-group"><label>Nom RP</label><input type="text" id="mb_nom_rp" placeholder="Nom RP" required></div>
+            <div class="form-group"><label>Nom HRP</label><input type="text" id="mb_nom_hrp" placeholder="Nom HRP" required></div>
+            <div class="form-group"><label>ID Discord</label><input type="text" id="mb_discord" placeholder="ID Discord" required></div>
+            <div class="form-group">
+              <label>Rôle</label>
+              <select id="mb_role">
+                <option value="agent">Agent Immo</option>
+                <option value="hg">HG</option>
+                <option value="staff">Staff</option>
+                <option value="co_patron">Co-Patron</option>
+                <option value="owner">Owner</option>
+                <option value="decorateur">Décorateur</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-submit-vente">Enregistrer</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================================
+          PAGE: LOGS
+          ================================================================ -->
+      <div id="page-logs" style="display:none;">
+        <section style="padding-top:40px;">
+
+          <div class="logs-header">
+            <div>
+              <p class="section-eyebrow">Patron / Staff</p>
+              <h2 class="section-title">Journal <em>d'activité</em></h2>
+            </div>
+            <button class="btn-vider-logs" onclick="viderLogs()">🗑️ Vider les logs</button>
+          </div>
+
+          <div class="logs-tabs">
+            <button class="logs-tab active" data-logtab="site" onclick="switchLogsTab('site')">Logs du site</button>
+            <button class="logs-tab" data-logtab="bot" onclick="switchLogsTab('bot')">Logs du bot Discord</button>
+          </div>
+
+          <div class="ventes-filters" style="margin:22px 0 18px;">
+            <select id="logsFilterType"></select>
+            <select id="logsFilterAgent"></select>
+            <input type="date" id="logsDateDebut" title="Du">
+            <input type="date" id="logsDateFin" title="Au">
+          </div>
+
+          <div class="logs-kpis" id="logsKpis"></div>
+
+          <div class="ventes-table-wrap">
+            <table class="ventes-table logs-table">
+              <thead>
+                <tr><th>Heure</th><th>Date</th><th>Type</th><th>Détails</th><th>Agent</th></tr>
+              </thead>
+              <tbody id="logsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ================================================================
+          PAGE: CONFIG
+          ================================================================ -->
+      <div id="page-config" style="display:none;">
+        <section style="padding-top:40px;">
+          <div class="section-head" style="margin-bottom:8px;">
+            <p class="section-eyebrow">Patron / Staff</p>
+            <h2 class="section-title">⚙️ Configuration</h2>
+            <p class="section-desc">Tout ce que tu peux gérer sur Dynasty 8, réuni ici — visible uniquement par le Owner.</p>
+          </div>
+
+          <div class="cfg-kpis" id="cfgKpis"></div>
+
+          <div class="cfg-grid">
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🔧 Mode maintenance <span class="cfg-badge off" id="cfgMaintenanceBadge">Site en ligne</span></div>
+              <p class="cfg-card-desc">Message affiché aux membres pendant la maintenance.</p>
+              <textarea id="cfgMaintenanceMsg" class="cfg-textarea">Le site est actuellement en maintenance. Merci de revenir un peu plus tard 🙏</textarea>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-green" id="cfgBtnToggleMaintenance" onclick="toggleMaintenancePreview()">🔧 Mettre en maintenance</button>
+                <button class="cfg-btn cfg-btn-outline" onclick="ouvrirGestionBypassPreview()">🔑 Gérer le bypass maintenance</button>
+                <button class="cfg-btn cfg-btn-dark" onclick="saveMaintenanceMsgPreview()">💾 Enregistrer</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">💰 Taux de taxe</div>
+              <p class="cfg-card-desc">Taxes appliquées sur les prix affichés aux clients.</p>
+              <div class="cfg-row">
+                <div class="cfg-field"><label class="cfg-label">Achat (%)</label><input type="number" id="cfgTaxeAchat" class="cfg-input" value="20"></div>
+                <div class="cfg-field"><label class="cfg-label">Location (%)</label><input type="number" id="cfgTaxeLoc" class="cfg-input" value="10"></div>
+              </div>
+              <button class="cfg-btn cfg-btn-green" onclick="saveTaxesPreview()">💾 Enregistrer</button>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🏠 Gestion des biens</div>
+              <p class="cfg-card-desc" id="cfgBiensDesc">0 bien(s) dynamique(s) enregistré(s).</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-green" onclick="ouvrirFormBien()">+ Ajouter</button>
+                <button class="cfg-btn cfg-btn-blue" onclick="ouvrirGestionBiens('modifier')">✏️ Modifier</button>
+                <button class="cfg-btn cfg-btn-red" onclick="ouvrirGestionBiens('supprimer')">🗑️ Supprimer</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🏷️ Catégories de biens</div>
+              <p class="cfg-card-desc">0 catégorie(s) personnalisée(s).</p>
+              <button class="cfg-btn cfg-btn-blue" onclick="ouvrirGestionCategoriesPreview()">🗂️ Gérer les catégories</button>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🗺️ Zones de cohérence</div>
+              <p class="cfg-card-desc">Assigner les biens et modifier le titre/intérieurs de chaque zone.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-blue" onclick="ouvrirGestionZonesPreview()">🗺️ Gérer les zones</button>
+                <button class="cfg-btn cfg-btn-outline" onclick="ouvrirEditeurVisuelInfo()">🖌️ Éditeur visuel</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🚫 Blacklist Villa</div>
+              <p class="cfg-card-desc" id="cfgBlacklistDesc">0 membre(s) actuellement blacklisté(s).</p>
+              <button class="cfg-btn cfg-btn-red" onclick="openBlacklistModal()">+ Blacklister un membre</button>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">💾 Sauvegarde</div>
+              <p class="cfg-card-desc">Backup automatique chaque jour à 6h (dimanche à minuit).</p>
+              <button class="cfg-btn cfg-btn-dark" onclick="declencherBackupPreview()">🔄 Lancer un backup maintenant</button>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">📊 Comptabilité</div>
+              <p class="cfg-card-desc" id="cfgComptaDesc">0 vente(s) dans la période en cours.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-purple" onclick="cloturerSemainePreview()">📅 Close Semaine</button>
+                <button class="cfg-btn cfg-btn-blue" onclick="cfgGoTo('statistiques')">📈 Voir les statistiques</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">📋 Journal & Ventes</div>
+              <p class="cfg-card-desc">Accès direct aux registres complets.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-dark" onclick="cfgGoTo('logs')">📋 Journal d'activité</button>
+                <button class="cfg-btn cfg-btn-blue" onclick="cfgGoTo('ventes')">🏷️ Toutes les ventes</button>
+                <button class="cfg-btn cfg-btn-purple" onclick="cfgGoTo('encheres')">🔨 Ventes aux enchères</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🖥️ Statut système</div>
+              <p class="cfg-card-desc">Temps réel : <strong id="cfgSocketStatus" style="color:var(--green);">Connecté</strong></p>
+              <button class="cfg-btn cfg-btn-dark" onclick="testerConnexionPreview(event)">🔌 Tester la connexion serveur</button>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">📤 Export de données</div>
+              <p class="cfg-card-desc">Télécharge un CSV pour Excel / Google Sheets.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-green" onclick="exporterVentesCSVPreview()">📊 Export ventes</button>
+                <button class="cfg-btn cfg-btn-blue" onclick="exporterMembresCSVPreview()">👥 Export membres</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🚫 Bloquer l'accès aux clients <span class="cfg-badge off" id="cfgAccessClientsBadge">Accès ouvert</span></div>
+              <p class="cfg-card-desc">Empêche les membres au rôle "Client" (aucun rôle Dynasty 8) d'accéder au site. Le staff et les agents ne sont jamais concernés.</p>
+              <textarea id="cfgAccessClientsMsg" class="cfg-textarea">L'accès au site est temporairement réservé au personnel Dynasty 8.</textarea>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-red" id="cfgBtnToggleAccessClients" onclick="toggleAccessClientsPreview()">🚫 Bloquer les clients</button>
+                <button class="cfg-btn cfg-btn-dark" onclick="saveAccessClientsMsgPreview()">💾 Enregistrer</button>
+              </div>
+            </div>
+
+            <div class="cfg-card cfg-card-wide">
+              <div class="cfg-card-title">🚫 Accès restreints (individuel & bans Discord)</div>
+              <p class="cfg-card-desc">Restreins l'accès à des membres précis, ou synchronise les bans du serveur Discord — un membre banni sur Discord perd automatiquement l'accès, avec le motif du ban affiché.</p>
+
+              <input type="text" class="ventes-search" id="cfgAccessSearch" placeholder="🔎 Rechercher par nom, ID Discord ou raison..." oninput="filtrerAccessRestreints()" style="margin-bottom:20px;">
+
+              <div style="display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;flex-wrap:wrap;gap:10px;">
+                <h4 style="font-size:13px;color:var(--ink);">Restrictions individuelles</h4>
+                <button class="cfg-btn cfg-btn-red" onclick="openAccessIndivModal()">+ Restreindre un membre</button>
+              </div>
+              <div class="ventes-table-wrap">
+                <table class="ventes-table" style="min-width:0;">
+                  <thead><tr><th>Nom</th><th>ID Discord</th><th>Raison</th><th>Ajouté le</th><th></th></tr></thead>
+                  <tbody id="cfgAccessIndivTableBody"></tbody>
+                </table>
+              </div>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;margin:26px 0 10px;flex-wrap:wrap;gap:10px;">
+                <div>
+                  <h4 style="font-size:13px;color:var(--ink);">Bannis du serveur Discord</h4>
+                  <p class="mock-note" id="cfgDiscordBansSyncNote">Jamais synchronisé.</p>
+                </div>
+                <button class="cfg-btn cfg-btn-blue" onclick="synchroniserBansDiscord()">🔄 Actualiser les bans Discord</button>
+              </div>
+              <div class="ventes-table-wrap">
+                <table class="ventes-table" style="min-width:0;">
+                  <thead><tr><th>Pseudo Discord</th><th>ID Discord</th><th>Raison du ban</th></tr></thead>
+                  <tbody id="cfgDiscordBansTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="cfg-card cfg-card-wide">
+              <div class="cfg-card-title">🐞 Journal d'erreurs <span class="cfg-badge off" id="cfgErreursBadge">Aucune erreur</span></div>
+              <p class="cfg-card-desc">Erreurs serveur et navigateur détectées automatiquement (les 502 sont ignorés). Télécharge le JSON pour me le transmettre.</p>
+              <div class="cfg-btn-row">
+                <select id="cfgErreursFiltre" class="cfg-input" style="width:auto;" onchange="chargerErreursConfig()">
+                  <option value="nouveau">À traiter</option>
+                  <option value="tout">Toutes</option>
+                </select>
+                <button class="cfg-btn cfg-btn-green" onclick="telechargerErreursJSON()">📥 Télécharger le JSON</button>
+                <button class="cfg-btn cfg-btn-blue" onclick="chargerErreursConfig()">🔄 Actualiser</button>
+                <button class="cfg-btn cfg-btn-red" onclick="viderErreursConfig(true)">🧹 Supprimer les corrigées</button>
+                <button class="cfg-btn cfg-btn-red" onclick="viderErreursConfig(false)">🗑️ Tout vider</button>
+              </div>
+              <div class="ventes-table-wrap" style="margin-top:14px;max-height:340px;">
+                <table class="ventes-table" style="min-width:0;">
+                  <thead><tr><th>Dernière fois</th><th>Source</th><th>Message</th><th>Route / Page</th><th>×</th><th></th></tr></thead>
+                  <tbody id="cfgErreursBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="cfg-card cfg-card-wide">
+              <div class="cfg-card-title">🔗 Webhooks & Bot Discord</div>
+              <p class="cfg-card-desc">URLs et token utilisés par le bot pour poster automatiquement sur Discord.</p>
+              <div class="cfg-webhook-row">
+                <div class="cfg-field">
+                  <label class="cfg-label">Webhook Ventes <span class="cfg-webhook-status ok">● actif</span></label>
+                  <div class="cfg-webhook-input-group">
+                    <input type="password" class="cfg-input" id="cfgWebhookVentes" value="https://discord.com/api/webhooks/••••••••••••••••">
+                    <button type="button" class="cfg-btn-icon" onclick="toggleWebhookVisibility('cfgWebhookVentes')">👁️</button>
+                    <button type="button" class="cfg-btn cfg-btn-outline" onclick="testerWebhook('Ventes')">Tester</button>
+                  </div>
+                </div>
+                <div class="cfg-field">
+                  <label class="cfg-label">Webhook Comptabilité <span class="cfg-webhook-status ok">● actif</span></label>
+                  <div class="cfg-webhook-input-group">
+                    <input type="password" class="cfg-input" id="cfgWebhookCompta" value="https://discord.com/api/webhooks/••••••••••••••••">
+                    <button type="button" class="cfg-btn-icon" onclick="toggleWebhookVisibility('cfgWebhookCompta')">👁️</button>
+                    <button type="button" class="cfg-btn cfg-btn-outline" onclick="testerWebhook('Comptabilité')">Tester</button>
+                  </div>
+                </div>
+                <div class="cfg-field">
+                  <label class="cfg-label">Webhook Logs (archive) <span class="cfg-webhook-status ok">● actif</span></label>
+                  <div class="cfg-webhook-input-group">
+                    <input type="password" class="cfg-input" id="cfgWebhookLogs" value="https://discord.com/api/webhooks/••••••••••••••••">
+                    <button type="button" class="cfg-btn-icon" onclick="toggleWebhookVisibility('cfgWebhookLogs')">👁️</button>
+                    <button type="button" class="cfg-btn cfg-btn-outline" onclick="testerWebhook('Logs')">Tester</button>
+                  </div>
+                </div>
+                <div class="cfg-field">
+                  <label class="cfg-label">Token Bot (DM certificats) <span class="cfg-webhook-status ok">● connecté</span></label>
+                  <div class="cfg-webhook-input-group">
+                    <input type="password" class="cfg-input" id="cfgBotToken" value="••••••••••••••••••••••••••••">
+                    <button type="button" class="cfg-btn-icon" onclick="toggleWebhookVisibility('cfgBotToken')">👁️</button>
+                    <button type="button" class="cfg-btn cfg-btn-outline" onclick="testerWebhook('Bot Discord')">Tester</button>
+                  </div>
+                </div>
+              </div>
+              <button class="cfg-btn cfg-btn-green" style="margin-top:14px;" onclick="enregistrerWebhooksPreview()">💾 Enregistrer les webhooks</button>
+              <p class="mock-note">Aperçu — champs masqués par défaut, valeurs fictives. À connecter aux variables d'environnement (.env) du serveur.</p>
+            </div>
+
+          </div>
+
+          <div class="section-head" style="margin:40px 0 18px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;">
+            <h2 class="section-title" style="font-size:22px;">👥 Membres <em>& Rôles</em></h2>
+            <button class="cfg-btn cfg-btn-blue" onclick="synchroniserMembresDiscord()">🔄 Synchroniser avec Discord</button>
+          </div>
+          <input type="text" class="ventes-search" id="cfgMembreSearch" placeholder="🔍 Rechercher un membre...">
+          <div class="ventes-table-wrap">
+            <table class="ventes-table">
+              <thead><tr><th>Nom RP</th><th>Nom HRP</th><th>ID Discord</th><th>Rôle</th><th>Décorateur</th><th>Actions</th></tr></thead>
+              <tbody id="cfgMembresTableBody"></tbody>
+            </table>
+          </div>
+          <div class="section-head" style="margin:40px 0 18px;">
+            <h2 class="section-title" style="font-size:22px;">🚫 Blacklist <em>Réservation Villa</em></h2>
+          </div>
+          <div class="ventes-table-wrap">
+            <table class="ventes-table">
+              <thead><tr><th>Nom</th><th>ID Discord</th><th>Raison</th><th>Fin</th><th></th></tr></thead>
+              <tbody id="cfgBlacklistTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ MODAL BLACKLISTER UN MEMBRE ============ -->
+      <div class="modal-overlay" id="blacklistModalOverlay" onclick="closeBlacklistModalOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="closeBlacklistModal()">✕</button>
+          <h3>🚫 Blacklister un membre</h3>
+          <form id="blacklistForm" onsubmit="return submitBlacklistForm(event)">
+            <div class="form-group"><label>Nom affiché</label><input type="text" id="bl_nom" placeholder="Pseudo RP" required></div>
+            <div class="form-group"><label>ID Discord</label><input type="text" id="bl_discord" placeholder="ID Discord" required></div>
+            <div class="form-group"><label>Durée (semaines)</label><input type="number" id="bl_semaines" value="2" min="1" required></div>
+            <div class="form-group"><label>Raison</label><input type="text" id="bl_raison" placeholder="Villa non achetée avant la fin de la réservation"></div>
+            <button type="submit" class="btn-submit-vente" style="background:#5a1f1c;border-color:var(--red);">Blacklister</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="accessIndivModalOverlay" onclick="closeAccessIndivModalOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="closeAccessIndivModal()">✕</button>
+          <h3>🚫 Restreindre un membre</h3>
+          <form id="accessIndivForm" onsubmit="return submitAccessIndivForm(event)">
+            <div class="form-group"><label>Nom (RP ou pseudo)</label><input type="text" id="ai_nom" placeholder="Nom affiché"></div>
+            <div class="form-group"><label>ID Discord</label><input type="text" id="ai_discord" placeholder="ID Discord" required></div>
+            <div class="form-group"><label>Raison</label><input type="text" id="ai_raison" placeholder="Motif de la restriction"></div>
+            <button type="submit" class="btn-submit-vente" style="background:#5a1f1c;border-color:var(--red);">Restreindre l'accès</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================================
+      PAGE: DÉCORATEURS — liste complète des profils
+      ================================================================ -->
+      <div id="page-decorateurs" style="display:none;">
+        <section style="padding-top:40px;">
+          <div class="deco-list-header">
+            <div>
+              <p class="section-eyebrow">Espace décoration</p>
+              <h2 class="section-title">Décorateurs</h2>
+              <p class="section-desc">Liste complète des décorateurs, officiels et indépendants.</p>
+            </div>
+            <input type="text" class="deco-search" id="decoSearch" placeholder="🔎 Rechercher un décorateur...">
+          </div>
+
+          <div class="deco-filters">
+            <select id="decoFilterOfficial">
+              <option value="tous">Tous les décorateurs</option>
+              <option value="officiel">✅ Officiels</option>
+              <option value="independant">Indépendants</option>
+            </select>
+            <select id="decoFilterStyle">
+              <option value="tous">Tous les styles</option>
+            </select>
+          </div>
+
+          <div class="deco-list-grid" id="decoListGrid">
+            <!-- Généré par la partie DÉCORATEURS de main.js -->
+          </div>
+        </section>
+      </div>
+
+      <!-- ================================================================
+          PAGE: FICHE DÉCORATEUR — page complète (staff+ ou propriétaire)
+      ================================================================ -->
+      <div id="page-fiche-decorateur" style="display:none;">
+        <section style="padding-top:40px;">
+          <button class="fiche-back-btn" onclick="cfgGoTo('decorateurs')">← Retour aux décorateurs</button>
+          <div id="ficheDecorateurContainer"><!-- généré par genererFicheDecorateur() --></div>
+        </section>
+      </div>
+
+      <!-- ============ MODAL DÉCORATEUR ZOOM ============ -->
+      <div class="modal-overlay" id="decoProfilOverlay" onclick="fermerProfilDecoOutside(event)">
+        <div class="modal-box deco-profil-modal">
+          <button class="modal-close" onclick="fermerProfilDeco()">✕</button>
+          <div class="deco-profil-header">
+            <div class="deco-profil-pp" id="decoProfilPP"></div>
+            <div class="deco-profil-info">
+              <h3 id="decoProfilNom"></h3>
+              <div class="deco-profil-badge" id="decoProfilBadge"></div>
+              <p class="deco-profil-desc" id="decoProfilDesc"></p>
+              <div class="deco-profil-contact">
+                <p><strong>📞 Contact RP:</strong> <span id="decoProfilContact"></span></p>
+                <p id="decoProfilDiscordWrap" style="display:none;"><strong>💬 Discord:</strong> <a id="decoProfilDiscordLink" href="#" target="_blank" rel="noopener noreferrer" style="color:var(--deco);"></a></p>
+              </div>
+            </div>
+          </div>
+          <div class="deco-profil-decos">
+            <h4 style="margin-bottom:16px;font-size:16px;">🎬 Décorations</h4>
+            <div id="decoProfilDecosList" class="deco-profil-decos-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================
+          PAGE: MON PROFIL (DÉCORATEUR)
+          ================================================================ -->
+      <div id="page-profil" style="display:none;">
+        <section style="padding-top:40px;">
+          <div class="section-head" style="margin-bottom:28px;">
+            <p class="section-eyebrow">Compte</p>
+            <h2 class="section-title">Mon <em>profil</em></h2>
+            <p class="section-desc">Gérez vos informations de décorateur et vos décorations.</p>
+          </div>
+
+          <div class="deco-profil-self-card">
+            <div class="deco-profil-self-header">
+              <div class="deco-pp-upload">
+                <img id="meDecoProfilImg" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" alt="Photo de profil">
+                <button class="deco-pp-upload-btn" onclick="ouvrirUploadPhotoProfil()">📷 Changer</button>
+                <input type="file" id="meDecoProfilUpload" accept="image/*" style="display:none;">
+              </div>
+              <div class="deco-profil-self-info">
+                <div class="form-group">
+                  <label>Nom RP</label>
+                  <input type="text" id="meDecoNomRP" placeholder="Votre nom RP" class="profil-input">
+                </div>
+                <div class="form-group">
+                  <label>Contact RP (Numéro tél)</label>
+                  <input type="text" id="meDecoContact" placeholder="555-XXXX" class="profil-input">
+                </div>
+                <div class="form-group">
+                  <label>Lien du serveur Discord</label>
+                  <input type="text" id="meDecoDiscord" placeholder="https://discord.gg/votre-lien" class="profil-input">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
+              <label>Description</label>
+              <textarea id="meDecoDesc" placeholder="Présentez-vous et votre style..." class="profil-textarea" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Styles</label>
+              <div class="deco-styles-checkboxes"><!-- généré par genererStylesDecoSelects() --></div>
+            </div>
+
+            <button class="btn-enregistrer-profil" onclick="enregistrerProfilDeco()">💾 Enregistrer le profil</button>
+          </div>
+
+          <div class="section-head" style="margin:40px 0 20px;">
+            <h2 class="section-title" style="font-size:22px;">Mes <em>décorations</em></h2>
+            <p class="section-desc" style="font-size:13px;">Proposez vos décorations pour les biens de l'agence.</p>
+          </div>
+
+          <button class="btn-nouvelle-vente btn-add-deco" onclick="ouvrirModalAjouterDeco()">➕ Ajouter une décoration</button>
+
+          <div class="deco-mes-decos-grid" id="meDezosGrid">
+            <!-- Généré par la fonction genererMessDecos() -->
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ MODAL AJOUTER/MODIFIER DÉCORATION ============ -->
+      <div class="modal-overlay" id="decoAddModalOverlay" onclick="fermerModalAjouterDecoOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="fermerModalAjouterDeco()">✕</button>
+          <h3 id="decoAddModalTitle">➕ Ajouter une décoration</h3>
+          <form id="decoAddForm" onsubmit="return soumettreAjouterDeco(event)">
+            <div class="form-group">
+              <label>Nom du bien / Décoration</label>
+              <input type="text" id="deco_nom" placeholder="Ex: Villa Vinewood rénovée" required>
+            </div>
+            <div class="form-group">
+              <label>Bien de l'agence (type)</label>
+              <div id="deco_bien_preview" class="bien-preview-clickable" onclick="ouvrirSelecteurBienDeco()" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #ddd;border-radius:8px;cursor:pointer;">
+                <span style="color:#9a9a94;font-size:13px;">📋 Cliquer pour choisir un bien</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Description du projet</label>
+              <textarea id="deco_desc" placeholder="Décrivez votre travail..." rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label>Média</label>
+              <div class="tabs-toggle" id="decoMediaTabs">
+                <button type="button" class="active" data-media="photo" onclick="switchDecoMediaType('photo')">📸 Photo</button>
+                <button type="button" data-media="video" onclick="switchDecoMediaType('video')">🎬 Vidéo</button>
+              </div>
+              <div id="decoMediaPhotoFields">
+                <input type="file" id="deco_photos" accept="image/*" multiple>
+                <div id="decoPhotosPreview" class="photo-upload-preview"></div>
+              </div>
+              <div id="decoMediaVideoFields" style="display:none;">
+                <input type="url" id="deco_video_url" placeholder="https://youtube.com/...">
+              </div>
+            </div>
+            <button type="submit" class="btn-submit-vente">Enregistrer la décoration</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================================
+          PAGE: CONFIG DÉCORATION
+          ================================================================ -->
+      <div id="page-config-deco" style="display:none;">
+        <section style="padding-top:40px;">
+          <div class="section-head" style="margin-bottom:28px;">
+            <p class="section-eyebrow">Espace décoration</p>
+            <h2 class="section-title">⚙️ Configuration</h2>
+            <p class="section-desc">Gestion de l'espace décoration et des décorateurs (Owner).</p>
+          </div>
+
+          <div class="cfg-kpis" id="cfgDecoKpis"></div>
+
+          <div class="cfg-grid">
+            <div class="cfg-card">
+              <div class="cfg-card-title">🎨 Gestion des décorateurs</div>
+              <p class="cfg-card-desc">Afficher, modifier ou révoquer les accès des décorateurs.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-blue" onclick="scrollToDecorateursTable()">👥 Gérer les décorateurs</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🏷️ Styles de décoration</div>
+              <p class="cfg-card-desc" id="cfgDecoStylesDesc">0 style(s) personnalisé(s).</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-purple" onclick="ouvrirGestionStylesDeco()">🎨 Gérer les styles</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">📊 Validations de déco</div>
+              <p class="cfg-card-desc">Vérifier et valider les décorations proposées par les décorateurs.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-green" onclick="afficherValidationsDeco()">📋 Voir les validations</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">📈 Statistiques décoration</div>
+              <p class="cfg-card-desc">Visualisez l'activité de l'équipe décoration.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-blue" onclick="afficherStatsDeco()">📊 Statistiques</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">💼 Commissions décorateurs</div>
+              <p class="cfg-card-desc">Gérer les taux de commission et les paiements.</p>
+              <div class="cfg-btn-row">
+                <button class="cfg-btn cfg-btn-green" onclick="ouvrirGestionCommissionsDeco()">💰 Commissions</button>
+              </div>
+            </div>
+
+            <div class="cfg-card">
+              <div class="cfg-card-title">🚫 Blacklist décorateurs</div>
+              <p class="cfg-card-desc" id="cfgDecoBlacklistDesc">0 décorateur(s) blacklisté(s).</p>
+              <button class="cfg-btn cfg-btn-red" onclick="openDecoBlacklistModal()">🚫 Blacklister</button>
+            </div>
+          </div>
+
+          <div class="section-head" style="margin:40px 0 18px;">
+            <h2 class="section-title" style="font-size:22px;">👥 Décorateurs <em>& Statistiques</em></h2>
+          </div>
+
+          <div class="ventes-table-wrap">
+            <table class="ventes-table">
+              <thead>
+                <tr><th>Nom RP</th><th>Décorations</th><th>Biens décorés</th><th>Statut</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="cfgDecoTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="section-head" style="margin:32px 0 14px;">
+            <h2 class="section-title" style="font-size:20px;">🚫 Blacklist <em>décorateurs</em></h2>
+          </div>
+          <div class="ventes-table-wrap">
+            <table class="ventes-table">
+              <thead><tr><th>Nom</th><th>Raison</th><th>Fin</th><th></th></tr></thead>
+              <tbody id="cfgDecoBlacklistTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============ MODAL BLACKLIST DÉCORATEUR ============ -->
+      <div class="modal-overlay" id="decoBlacklistModalOverlay" onclick="closeDecoBlacklistModalOutside(event)">
+        <div class="modal-box">
+          <button class="modal-close" onclick="closeDecoBlacklistModal()">✕</button>
+          <h3>🚫 Blacklister un décorateur</h3>
+          <form id="decoBlacklistForm" onsubmit="return submitDecoBlacklistForm(event)">
+            <div class="form-group"><label>Nom du décorateur</label><input type="text" id="bl_deco_nom" placeholder="Nom RP" required></div>
+            <div class="form-group"><label>Durée (semaines)</label><input type="number" id="bl_deco_semaines" value="4" min="1" required></div>
+            <div class="form-group"><label>Raison</label><input type="text" id="bl_deco_raison" placeholder="Mauvaise qualité de travail..."></div>
+            <button type="submit" class="btn-submit-vente" style="background:#5a1f1c;border-color:var(--red);">Blacklister</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ================================================================
+          PAGE: DÉCONNEXION
+          ================================================================ -->
+      <div id="page-deconnexion" style="display:none;">
+        <section>
+          <div class="section-head">
+            <p class="section-eyebrow">Compte</p>
+            <h2 class="section-title">Déconnexion</h2>
+            <p class="section-desc">Vous êtes sur le point de vous déconnecter.</p>
+          </div>
+          <button class="cfg-btn cfg-btn-red" onclick="deconnexionReelle()">🚪 Se déconnecter</button>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<footer>© 2026 Dynasty 8 | SkyFA — Par Aid3nn</footer>
+
+<!-- ============ PAGE CONNEXION ============ -->
+<div id="page-login" class="gate-screen" style="display:none;">
+  <div class="gate-card">
+    <img src="assets/logo_dynasty8.png" class="gate-logo" alt="Dynasty 8">
+    <h1 class="gate-title">Dynasty <em>8</em></h1>
+    <p class="gate-sub">Connecte-toi avec ton compte Discord pour accéder à l'application.</p>
+    <a href="#" id="btnLoginDiscord" class="gate-discord-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+      </svg>
+      Se connecter avec Discord
+    </a>
+  </div>
+</div>
+
+<!-- ============ PAGE MAINTENANCE ============ -->
+<div id="page-maintenance" class="gate-screen" style="display:none;">
+  <div class="gate-card">
+    <img src="assets/logo_dynasty8.png" class="gate-logo gate-logo-faded" alt="Dynasty 8">
+    <div class="gate-icon">🚧</div>
+    <h1 class="gate-title-serif">Site en maintenance</h1>
+    <p class="gate-sub" id="maintenanceMessage">Le site est actuellement en maintenance. Merci de revenir un peu plus tard 🙏</p>
+    <a href="#" id="btnLoginDiscordMaintenance" class="gate-discord-btn" style="display:none;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.032.054a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+      </svg>
+      Se connecter avec Discord
+    </a>
+    <button id="btnLogoutMaintenance" class="gate-logout-btn" style="display:none;">Se déconnecter</button>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="error-client.js?v=__BUILD__"></script>
+<script src="main.js?v=__BUILD__"></script>
+<script src="mobile-nav.js?v=__BUILD__"></script>
+
+</body>
+</html>

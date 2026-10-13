@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynasty 8 — Carte des cohérences</title>
+<link rel="icon" href="assets/logo_site.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-deep:#05170d;
+  --bg-panel:#081d11;
+  --hairline:rgba(244,241,232,.12);
+  --ink:#f3efe4;
+  --ink-dim:rgba(243,239,228,.62);
+  --gold:#e0b13d;
+  --green:#3fae66;
+  --font-display:'Cormorant Garamond', Georgia, serif;
+  --font-body:'DM Sans','Segoe UI',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  background:var(--bg-deep);color:var(--ink);font-family:var(--font-body);
+  overflow:hidden;
+}
+
+.topbar{
+  height:56px;display:flex;align-items:center;gap:14px;padding:0 20px;
+  background:var(--bg-panel);border-bottom:1px solid var(--hairline);
+  position:relative;z-index:100;
+}
+.topbar .mark{
+  width:28px;height:28px;border-radius:7px;
+  background:linear-gradient(155deg,var(--green),#0e2d1a);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:600;color:var(--gold);font-size:14px;
+}
+.topbar h1{font-family:var(--font-display);font-size:17px;font-weight:600;}
+.topbar h1 em{color:var(--gold);font-style:normal;}
+.topbar .sub{font-size:11px;color:var(--ink-dim);margin-left:2px;}
+.topbar .spacer{flex:1;}
+.topbar button{
+  background:rgba(255,255,255,.06);border:1px solid var(--hairline);color:var(--ink);
+  padding:8px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;
+  transition:background .15s;
+}
+.topbar button:hover{background:rgba(255,255,255,.12);}
+.topbar button.close{background:rgba(200,50,50,.18);border-color:rgba(255,90,90,.3);}
+.topbar button.close:hover{background:rgba(220,60,60,.35);}
+
+.map-viewport{
+  position:relative;width:100%;height:calc(100vh - 56px);overflow:hidden;
+  background:#0c2d52;cursor:grab;
+}
+.map-viewport.dragging{cursor:grabbing;}
+.map-content{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;}
+.map-content img{display:block;height:880px;width:auto;user-select:none;-webkit-user-drag:none;}
+
+.map-svg-layer{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+}
+.map-zone{
+  pointer-events:all;stroke-width:2;cursor:pointer;transition:fill .15s;
+}
+.zone-or     { fill: rgba(180,150,30,.4);  stroke:#c8a820; }
+.zone-vert   { fill: rgba(60,130,70,.4);   stroke:#3a8246; }
+.zone-rouge  { fill: rgba(140,40,40,.4);   stroke:#8b2020; }
+.zone-violet { fill: rgba(130,50,130,.4);  stroke:#7a2e7a; }
+.zone-bleu   { fill: rgba(50,100,200,.4);  stroke:#3264c8; }
+.zone-orange { fill: rgba(228,114,7,.4);   stroke:#c77c1a; }
+.zone-or:hover     { fill: rgba(180,150,30,.7); }
+.zone-vert:hover   { fill: rgba(60,130,70,.7); }
+.zone-rouge:hover  { fill: rgba(140,40,40,.7); }
+.zone-violet:hover { fill: rgba(130,50,130,.7); }
+.zone-bleu:hover   { fill: rgba(50,100,200,.7); }
+.zone-orange:hover { fill: rgba(228,114,7,.7); }
+.map-x line{ stroke:#ff2020; stroke-width:10; stroke-linecap:round; pointer-events:none; }
+
+.map-controls{
+  position:absolute;top:16px;right:16px;z-index:50;display:flex;flex-direction:column;gap:8px;
+}
+.map-controls button{
+  width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.25);color:#fff;font-size:16px;cursor:pointer;
+}
+.map-controls button:hover{background:rgba(224,177,61,.7);}
+
+.zone-tooltip{
+  display:none;position:fixed;z-index:999;background:rgba(0,0,0,.9);color:#fff;
+  padding:8px 11px;border-radius:8px;font-size:12.5px;font-weight:600;pointer-events:none;
+  max-width:220px;box-shadow:0 6px 20px rgba(0,0,0,.4);
+}
+
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(5px);
+  display:none;align-items:center;justify-content:center;z-index:1000;
+}
+.modal-overlay.open{display:flex;}
+.modal-box{
+  background:rgba(10,25,15,.9);border:1px solid rgba(224,177,61,.35);
+  border-radius:16px;padding:26px;width:420px;max-width:90vw;max-height:80vh;overflow-y:auto;
+}
+.modal-box h2{font-family:var(--font-display);color:var(--gold);font-size:21px;font-weight:600;margin-bottom:6px;}
+.modal-box .count{font-size:12px;color:var(--ink-dim);margin-bottom:14px;}
+.modal-box ul{list-style:none;}
+.modal-box li{
+  padding:8px 10px;border-bottom:1px solid var(--hairline);font-size:13px;color:var(--ink-dim);
+}
+.modal-close{
+  margin-top:16px;width:100%;background:rgba(255,255,255,.08);border:1px solid var(--hairline);
+  color:var(--ink);padding:10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;
+}
+.modal-close:hover{background:rgba(255,255,255,.15);}
+
+/* --- Section biens assignés à la zone --- */
+.modal-biens-title{
+  font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-dim);
+  margin:16px 0 8px;
+}
+.modal-bien-item{
+  display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--hairline);
+}
+.modal-bien-item img{
+  width:42px;height:42px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#0c2d52;
+}
+.modal-bien-item .infos{flex:1;min-width:0;}
+.modal-bien-item .nom{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.modal-bien-item .prix{font-size:11px;color:var(--gold);margin-top:2px;}
+.modal-biens-empty{font-size:12px;color:var(--ink-dim);font-style:italic;padding:6px 0;}
+
+.notice{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:50;
+  background:rgba(0,0,0,.55);color:var(--ink-dim);font-size:11px;padding:6px 14px;border-radius:20px;
+  border:1px solid var(--hairline);
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="mark">D8</div>
+  <h1>Dynasty <em>8</em></h1>
+  <span class="sub">— Carte des cohérences</span>
+  <div class="spacer"></div>
+  <button onclick="resetMap()">↺ Recentrer</button>
+  <button class="close" onclick="fermerCarte()">✕ Fermer</button>
+</header>
+
+<div class="map-viewport" id="mapViewport">
+  <div class="map-content" id="mapContent">
+    <img src="assets/map_gta.jpg" alt="Carte Los Santos" draggable="false" id="mapImg">
+    <svg viewBox="0 0 2048 2048" preserveAspectRatio="none" class="map-svg-layer" id="mapSvg">
+        
+    </svg>
+  </div>
+  <div class="map-controls">
+    <button onclick="zoomBy(1.2)">+</button>
+    <button onclick="zoomBy(0.8)">−</button>
+  </div>
+  <div class="notice">Glisser pour déplacer · molette pour zoomer · cliquer une zone / croix pour voir ses intérieurs</div>
+</div>
+
+<div class="zone-tooltip" id="zoneTooltip"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <h2 id="modalTitle">Zone</h2>
+    <p class="count" id="modalCount"></p>
+    <ul id="modalList"></ul>
+    <p class="modal-biens-title">🏠 Biens de l'agence dans cette zone</p>
+    <div id="modalBiensList"></div>
+    <button class="modal-close" onclick="closeModal()">Fermer</button>
+  </div>
+</div>
+
+<script>
+
+const SERVER_URL = (location.hostname === '127.0.0.1' || location.hostname === 'localhost')
+  ? 'http://localhost:3000'
+  : 'https://dynasty8-skyfa.sub-yorkhost.fr';
+
+let ZONES_DATA = [];
+let BIENS_DYNAMIQUES = [];
+
+/* ============================================================
+   CHARGEMENT + RENDU DYNAMIQUE DES ZONES
+   ============================================================ */
+async function chargerZones() {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/zones-shapes`);
+    ZONES_DATA = res.ok ? await res.json() : [];
+  } catch (e) {
+    console.error('Erreur chargement zones:', e);
+    ZONES_DATA = [];
+  }
+  renderZones();
+}
+
+/* ============================================================
+   CHARGEMENT DES BIENS DYNAMIQUES (pour lister ceux par zone)
+   Nécessite d'être connecté (session partagée avec index.html) —
+   si l'appel échoue (pas connecté / droits insuffisants), on
+   n'affiche simplement pas la section biens, sans bloquer la carte.
+   ============================================================ */
+async function chargerBiensCarte() {
+  try {
+    const res = await fetch(`${SERVER_URL}/api/biens`, { credentials: 'include' });
+    if (res.ok) BIENS_DYNAMIQUES = await res.json();
+  } catch (e) {
+    console.error('Erreur chargement biens:', e);
+    BIENS_DYNAMIQUES = [];
+  }
+}
+
+const NS = 'http://www.w3.org/2000/svg';
+function mk(tag) { return document.createElementNS(NS, tag); }
+
+function hexToRgba(hex, alpha) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0,2), 16);
+  const g = parseInt(h.substring(2,4), 16);
+  const b = parseInt(h.substring(4,6), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function renderZones() {
+  const svg = document.getElementById('mapSvg');
+  svg.innerHTML = '';
+
+  ZONES_DATA.forEach(z => {
+    if (!z.pts || z.pts.length === 0) return;
+
+    if (z.kind === 'poly' && z.pts.length >= 3) {
+      const poly = mk('polygon');
+      poly.setAttribute('points', z.pts.map(p => `${p.x},${p.y}`).join(' '));
+      poly.setAttribute('class', 'map-zone');
+      poly.style.fill = hexToRgba(z.color, 0.4);
+      poly.style.stroke = z.color;
+      attachZoneEvents(poly, z);
+      svg.appendChild(poly);
+
+    } else if (z.kind === 'cross') {
+      z.pts.forEach(p => {
+        const g = mk('g');
+        g.setAttribute('class', 'map-x');
+        g.setAttribute('transform', `translate(${p.x},${p.y})`);
+        const l1 = mk('line'); l1.setAttribute('x1',-20); l1.setAttribute('y1',-20); l1.setAttribute('x2',20); l1.setAttribute('y2',20); l1.setAttribute('stroke', z.color);
+        const l2 = mk('line'); l2.setAttribute('x1',20); l2.setAttribute('y1',-20); l2.setAttribute('x2',-20); l2.setAttribute('y2',20); l2.setAttribute('stroke', z.color);
+        g.appendChild(l1); g.appendChild(l2);
+        g.style.pointerEvents = 'all';
+        g.style.cursor = 'pointer';
+        attachZoneEvents(g, z);
+        svg.appendChild(g);
+      });
+
+    } else if (z.kind === 'icon') {
+      z.pts.forEach(p => {
+        const g = mk('g');
+        g.setAttribute('class', 'map-icon');
+        g.setAttribute('transform', `translate(${p.x},${p.y})`);
+        g.style.pointerEvents = 'all';
+        g.style.cursor = 'pointer';
+
+        const icon = mk('text');
+        icon.setAttribute('x', 0); icon.setAttribute('y', 0);
+        icon.setAttribute('text-anchor', 'middle');
+        icon.setAttribute('font-size', '15');
+        icon.textContent = '🏢';
+        g.appendChild(icon);
+
+        const num = mk('text');
+        num.setAttribute('x', 0); num.setAttribute('y', 12);
+        num.setAttribute('text-anchor', 'middle');
+        num.setAttribute('fill', '#fff');
+        num.setAttribute('font-size', '7');
+        num.setAttribute('font-weight', 'bold');
+        num.setAttribute('paint-order', 'stroke');
+        num.setAttribute('stroke', '#000');
+        num.setAttribute('stroke-width', '2');
+        num.textContent = z.number || '';
+        g.appendChild(num);
+
+        const label = mk('text');
+        label.setAttribute('x', 0); label.setAttribute('y', 21);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('fill', '#fff');
+        label.setAttribute('font-size', '6');
+        label.setAttribute('paint-order', 'stroke');
+        label.setAttribute('stroke', '#000');
+        label.setAttribute('stroke-width', '2');
+        label.textContent = z.name;
+        g.appendChild(label);
+
+        attachZoneEvents(g, z);
+        svg.appendChild(g);
+      });
+    }
+  });
+}
+
+function attachZoneEvents(el, zone) {
+  el.addEventListener('mouseenter', () => showTooltip(zone.name));
+  el.addEventListener('mousemove', moveTooltip);
+  el.addEventListener('mouseleave', hideTooltip);
+  el.addEventListener('click', () => openZone(zone));
+}
+
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
+function showTooltip(text){
+  const t = document.getElementById("zoneTooltip");
+  t.textContent = text;
+  t.style.display = "block";
+}
+function moveTooltip(e){
+  const t = document.getElementById("zoneTooltip");
+  t.style.left = (e.clientX + 16) + "px";
+  t.style.top  = (e.clientY + 16) + "px";
+}
+function hideTooltip(){
+  document.getElementById("zoneTooltip").style.display = "none";
+}
+
+/* ============================================================
+   MODALE AU CLIC — nom + image de la zone + biens assignés
+   Le rapprochement se fait par NOM (zone.name), qui doit être
+   identique au nom utilisé dans "Gérer les zones" côté Config
+   et donc dans bien.zones.
+   ============================================================ */
+function openZone(zone){
+  document.getElementById("modalTitle").textContent = zone.name;
+  document.getElementById("modalCount").textContent = zone.number ? `N° ${zone.number}` : '';
+  const ul = document.getElementById("modalList");
+  ul.innerHTML = "";
+  if (zone.image) {
+    const li = document.createElement("li");
+    li.innerHTML = `<img src="${zone.image}" style="width:100%;border-radius:8px;margin-top:6px;">`;
+    ul.appendChild(li);
+  }
+
+  const biensZone = BIENS_DYNAMIQUES.filter(b => Array.isArray(b.zones) && b.zones.includes(zone.name));
+  const biensWrap = document.getElementById("modalBiensList");
+  biensWrap.innerHTML = biensZone.length === 0
+    ? `<p class="modal-biens-empty">Aucun bien de l'agence assigné à cette zone.</p>`
+    : biensZone.map(b => `
+      <div class="modal-bien-item">
+        <img src="${b.images?.[0] || ''}">
+        <div class="infos">
+          <div class="nom">${b.nom}</div>
+          <div class="prix">${b.prixAchat.toLocaleString('fr-FR')}$ · ${b.prixLoc.toLocaleString('fr-FR')}$/sem</div>
+        </div>
+      </div>
+    `).join('');
+
+  document.getElementById("modalOverlay").classList.add("open");
+}
+function closeModal(){
+  document.getElementById("modalOverlay").classList.remove("open");
+}
+
+/* ============================================================
+   PAN / ZOOM (inchangé)
+   ============================================================ */
+let mapState = { zoom:1, x:0, y:0, isDragging:false, start:{x:0,y:0} };
+
+function initMap(){
+  const viewport = document.getElementById("mapViewport");
+  let lastTouch = null;
+
+  viewport.addEventListener("mousedown", e => {
+    mapState.isDragging = true;
+    mapState.start = { x: e.clientX - mapState.x, y: e.clientY - mapState.y };
+    viewport.classList.add("dragging");
+  });
+  window.addEventListener("mousemove", e => {
+    if (!mapState.isDragging) return;
+    mapState.x = e.clientX - mapState.start.x;
+    mapState.y = e.clientY - mapState.start.y;
+    updateTransform();
+  });
+  window.addEventListener("mouseup", () => {
+    mapState.isDragging = false;
+    viewport.classList.remove("dragging");
+  });
+  viewport.addEventListener("wheel", e => {
+    e.preventDefault();
+    zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1.1 : 0.9);
+  }, { passive:false });
+
+  viewport.addEventListener("touchstart", e => {
+    if (e.touches.length === 1)
+      lastTouch = { x: e.touches[0].clientX - mapState.x, y: e.touches[0].clientY - mapState.y };
+  }, { passive:true });
+  viewport.addEventListener("touchmove", e => {
+    if (e.touches.length === 1 && lastTouch) {
+      mapState.x = e.touches[0].clientX - lastTouch.x;
+      mapState.y = e.touches[0].clientY - lastTouch.y;
+      updateTransform();
+    }
+  }, { passive:true });
+  viewport.addEventListener("touchend", () => { lastTouch = null; });
+}
+
+function zoomAt(clientX, clientY, factor){
+  const viewport = document.getElementById("mapViewport");
+  const rect = viewport.getBoundingClientRect();
+  const mX = clientX - rect.left, mY = clientY - rect.top;
+  const tX = (mX - mapState.x) / mapState.zoom;
+  const tY = (mY - mapState.y) / mapState.zoom;
+  mapState.zoom = Math.max(0.5, Math.min(mapState.zoom * factor, 5));
+  mapState.x = mX - tX * mapState.zoom;
+  mapState.y = mY - tY * mapState.zoom;
+  updateTransform();
+}
+
+function zoomBy(factor){
+  const viewport = document.getElementById("mapViewport");
+  zoomAt(viewport.clientWidth/2, viewport.clientHeight/2, factor);
+}
+
+function updateTransform(){
+  document.getElementById("mapContent").style.transform =
+    `translate(${mapState.x}px, ${mapState.y}px) scale(${mapState.zoom})`;
+}
+
+function resetMap(){
+  mapState = { zoom:1, x:0, y:0, isDragging:false, start:{x:0,y:0} };
+  centerMap();
+}
+
+function centerMap(){
+  const viewport = document.getElementById("mapViewport");
+  const img = document.getElementById("mapImg");
+  const apply = () => {
+    mapState.x = (viewport.clientWidth  - img.offsetWidth  * mapState.zoom) / 2;
+    mapState.y = (viewport.clientHeight - img.offsetHeight * mapState.zoom) / 2;
+    updateTransform();
+  };
+  if (img.complete && img.naturalWidth) apply();
+  else img.onload = apply;
+}
+
+function fermerCarte(){
+  window.close();
+  setTimeout(() => { history.length > 1 ? history.back() : (window.location.href = "index.html"); }, 150);
+}
+
+document.getElementById("modalOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "modalOverlay") closeModal();
+});
+
+window.addEventListener("resize", () => { centerMap(); });
+initMap();
+centerMap();
+chargerZones();      // ← charge et affiche les zones dynamiquement depuis l'API
+chargerBiensCarte();  // ← charge les biens en parallèle, pour la liste par zone dans la modale
+</script>
+
+</body>
+</html>
